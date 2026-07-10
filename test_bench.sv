@@ -1,8 +1,7 @@
 `ifndef TEST_BENCH_SV
 `define TEST_BENCH_SV
 
-package test_bench;
-
+package test_bench_utils;
 typedef enum {
   Passed, Failed, ToBeRun
 } TestResult;
@@ -17,7 +16,7 @@ class Test;
   endfunction
 
   function passed();
-    passed = this.result == Passed;
+    return this.result == Passed;
   endfunction
 
   task pass();
@@ -29,7 +28,7 @@ class Test;
   endtask
 
   function string test_name();
-    test_name = this.name;
+    return this.name;
   endfunction
 
 endclass: Test
@@ -68,11 +67,11 @@ class TestArray;
   endtask
 
   function string last_test_name();
-    last_test_name = this.store[this.size-1].test_name();
+    return this.store[this.size-1].test_name();
   endfunction
 
   function int num_tests();
-    num_tests = this.size;
+    return this.size;
   endfunction
 
   function int num_passed_tests();
@@ -81,17 +80,21 @@ class TestArray;
       if (this.store[i].passed()) acc++;
     end
 
-    num_passed_tests = acc;
+    return acc;
   endfunction
 
   function bit all_tests_passed();
-    all_tests_passed = this.num_passed_tests() == this.size;
+    return this.num_passed_tests() == this.size;
   endfunction
 endclass: TestArray
+endpackage: test_bench_utils
+
+package test_bench;
+import test_bench_utils::*;
 
 class TestBench;
   local bit all_asserts_passed;
-  TestArray tests;
+  local TestArray tests;
 
   function new();
     this.all_asserts_passed = 1;
@@ -133,12 +136,12 @@ class TestBench;
     end
   endtask: check_8b_eq
 
-  task assert_false;
+  task assert_false();
     this.all_asserts_passed = 0;
   endtask
 
   function bit all_checks_passed();
-    all_checks_passed = this.all_asserts_passed;
+    return this.all_asserts_passed;
   endfunction
 
   task display_test_results();
@@ -146,7 +149,7 @@ class TestBench;
     if (this.tests.all_tests_passed()) $display("\033[32mALL TESTS PASSED\033[39m");
     else                               $display("\033[31mTESTS FAILED\033[39m");
   endtask
-endclass
+endclass: TestBench
 
 endpackage: test_bench
 
