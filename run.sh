@@ -4,11 +4,14 @@
 tests=""
 
 # Put any verilator flags here, for example -Ipath/to/src/file/dir or -Ipath/to/test/file/dir
+# Remember that this should include a -Ipath/to/test/bench/library/dir
 verilator_flags=""
+
+test_bench_lib_filename=""
 
 test() {
   printf "\033[32mRunning $1\033[39m\n"
-  res=$(verilator --binary -j 0 $verilator_flags $2.sv)
+  res=$(verilator --binary -j 0 $verilator_flags $test_bench_lib_filename $2.sv)
   if [ $? -eq "0" ]; then
     test_out=$(./obj_dir/V$2 | head -n -4)
     echo "$test_out"
