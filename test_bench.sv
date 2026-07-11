@@ -136,6 +136,16 @@ class TestBench;
     end
   endtask: check_8b_eq
 
+  task check_1b_eq (
+    input logic received,
+    input logic expected
+  );
+    if (expected !== received) begin
+      $display("\033[31mERROR\033[39m: expected %0d but recieved %0d", expected, received);
+      this.all_asserts_passed = 0;
+    end
+  endtask: check_1b_eq
+
   task assert_false();
     this.all_asserts_passed = 0;
   endtask
